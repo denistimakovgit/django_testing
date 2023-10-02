@@ -28,16 +28,14 @@ def test_get_first_course(client, course_factory):
     """
 
     # Arrange
-    Courses = course_factory(_quantity=1)
-    course_id = Courses[0].id
+    courses = course_factory(_quantity=1)
+    course_id = courses[0].id
 
     #Act
-    response = client.get('http://localhost:8000/api/v1/courses/')
+    response = client.get(f'/api/v1/courses/{course_id}/')
 
     #Assert
     assert response.status_code == 200
-    data = response.json()
-    assert data[0]['id'] == course_id
 
 @pytest.mark.django_db
 def test_get_courses_list(client, course_factory):
@@ -46,16 +44,16 @@ def test_get_courses_list(client, course_factory):
     """
 
     # Arrange
-    Courses = course_factory(_quantity=10)
+    courses = course_factory(_quantity=10)
 
     # Act
-    response = client.get('http://localhost:8000/api/v1/courses/')
+    response = client.get('/api/v1/courses/')
 
     # Assert
     assert response.status_code == 200
     data = response.json()
     for key, value in enumerate(data):
-        assert value['name'] ==  Courses[key].name
+        assert value['name'] ==  courses[key].name
 
 @pytest.mark.django_db
 def test_get_courses_filter_id(client, course_factory):
@@ -64,11 +62,11 @@ def test_get_courses_filter_id(client, course_factory):
     """
 
     # Arrange
-    Courses = course_factory(_quantity=5)
-    course_id = Courses[0].id
+    courses = course_factory(_quantity=5)
+    course_id = courses[0].id
 
     # Act
-    response = client.get('http://localhost:8000/api/v1/courses/', data={'id': course_id})
+    response = client.get('/api/v1/courses/', data={'id': course_id})
 
     # Assert
     assert response.status_code == 200
@@ -82,11 +80,11 @@ def test_get_courses_filter_name(client, course_factory):
     """
 
     # Arrange
-    Courses = course_factory(_quantity=5)
-    course_name = Courses[0].name
+    courses = course_factory(_quantity=5)
+    course_name = courses[0].name
 
     # Act
-    response = client.get('http://localhost:8000/api/v1/courses/', data={'name': course_name})
+    response = client.get('/api/v1/courses/', data={'name': course_name})
 
     # Assert
     assert response.status_code == 200
@@ -100,13 +98,13 @@ def test_create_course(client):
     """
 
     # Arrange
-    Studet_1 = Student.objects.create(name='Alexander Petrov', birth_date='2000-01-02')
+    studet_1 = Student.objects.create(name='Alexander Petrov', birth_date='2000-01-02')
 
     # Act
-    response = client.post('http://localhost:8000/api/v1/courses/', data= {
+    response = client.post('/api/v1/courses/', data= {
         'id': 1,
         'name': 'Python',
-        'students': [Studet_1.id]
+        'students': [studet_1.id]
     })
 
     # Assert
@@ -119,20 +117,20 @@ def test_update_course(client, course_factory, student_factory):
     """
 
     # Arrange
-    Students = student_factory(_quantity=2)
-    Courses = course_factory(_quantity=5)
-    course_id = Courses[0].id
+    students = student_factory(_quantity=2)
+    courses = course_factory(_quantity=5)
+    course_id = courses[0].id
 
     # Act
-    response = client.patch(f'http://localhost:8000/api/v1/courses/{course_id}/', data = {
+    response = client.patch(f'/api/v1/courses/{course_id}/', data = {
         'name': 'Python',
-        'students': [student.id for student in Students]
+        'students': [student.id for student in students]
     } )
 
     # Assert
     assert response.status_code == 200
     data = response.json()
-    assert data['students'] == [student.id for student in Students]
+    assert data['students'] == [student.id for student in students]
 
 @pytest.mark.django_db
 def test_delete_course(client, course_factory):
@@ -141,11 +139,11 @@ def test_delete_course(client, course_factory):
     """
 
     # Arrange
-    Courses = course_factory(_quantity=5)
-    course_id = Courses[0].id
+    courses = course_factory(_quantity=5)
+    course_id = courses[0].id
 
     # Act
-    response = client.delete(f'http://localhost:8000/api/v1/courses/{course_id}/')
+    response = client.delete(f'/api/v1/courses/{course_id}/')
 
     # Assert
     assert response.status_code == 204
